@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+# 1.9 adds realpath to resolve symlinks; 1.8 doesn't
+# have this method, so we add it so we get resolved symlinks
+# and compatibility
+unless File.respond_to? :realpath
+  class File #:nodoc:
+    def self.realpath path
+      return realpath(File.readlink(path)) if symlink?(path)
+      path
+    end
+  end
+end
+$: << File.expand_path(File.dirname(File.realpath(__FILE__)) + '/../lib')
+require 'rubygems'
+require 'gli'
+require 'relastic_version'
+require 'relastic'
+
+include GLI
+config_file '.relastic.rc'
+program_desc 'Face Detection using Elastic Bunch Graph Matching. Written in Ruby.'
+
+version Relastic::VERSION
+
+#desc 'Describe some switch here'
+#switch [:s,:switch]
+
+#desc 'Describe some flag here'
+#default_value 'the default'
+#arg_name 'The name of the argument'
+#flag [:f,:flagname]
+
+desc 'compare computes the similarity of two images, at the moment only normalized pictures work'
+arg_name 'compare expects two image files as parameters'
+command :compare do |c|
+  #c.desc 'Describe a switch to compare'
+  #c.switch :s
+  c.desc 'Path to first image'
+  c.flag [:i1, :image1, 'i1']
+  c.desc 'Path to second image'
+  c.flag [:i2, :image2, 'i2']
+  c.action do |global_options,options,args|
+    if(options[:i1].nil? && options[:i2].nil?)
+      raise "--image1[-i1] and --image2[-i2] required"
+    end
+    fbg = FaceBunchGraph.new()
+    fg = FaceGraph.new(options[:i1],fbg)
+    fg2 = FaceGraph.new(options[:i2],fbg)
+    fg.compare_with(fg2)
+  end
+end
+
+desc 'TODO: command to rebuild the fbg.dump'
+arg_name 'relastic rebuild --images <imagepath> --graphs <graphpath>'
+command :rebuild do |c|
+  c.action do |global_options,options,args|
+    raise "not implemented"
+  end
+end
+
+desc 'draw finds the face in the input picture and draws the FaceGraph to output'
+arg_name 'relastic draw --input <image> --output <image>'
+command :draw do |c|
+  c.action do |global_options,options,args|
+    raise "not implemented"
+  end
+end
+
+pre do |global,command,options,args|
+  # Pre logic here
+  # Return true to proceed; false to abourt and not call the
+  # chosen command
+  # Use skips_pre before a command to skip this block
+  # on that command only
+  true
+end
+
+post do |global,command,options,args|
+  # Post logic here
+  # Use skips_post before a command to skip this
+  # block on that command only
+end
+
+on_error do |exception|
+  # Error logic here
+  # return false to skip default error handling
+  true
+end
+
+exit GLI.run(ARGV)

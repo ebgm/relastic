@@ -1,0 +1,5 @@
+= relastic
+
+Generate this with
+    relastic rdoc
+After you have described your command line interface
