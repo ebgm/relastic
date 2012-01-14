@@ -36,16 +36,16 @@ command :compare do |c|
   #c.desc 'Describe a switch to compare'
   #c.switch :s
   c.desc 'Path to first image'
-  c.flag [:i1, :image1, 'i1']
+  c.flag [:a, :image_a]
   c.desc 'Path to second image'
-  c.flag [:i2, :image2, 'i2']
+  c.flag [:b, :image_b]
   c.action do |global_options,options,args|
-    if(options[:i1].nil? && options[:i2].nil?)
-      raise "--image1[-i1] and --image2[-i2] required"
+    if(options[:a].nil? && options[:b].nil?)
+      raise "--image_a[-a] and --image_b[-b] required"
     end
     fbg = FaceBunchGraph.new()
-    fg = FaceGraph.new(options[:i1],fbg)
-    fg2 = FaceGraph.new(options[:i2],fbg)
+    fg = FaceGraph.new(options[:a],fbg)
+    fg2 = FaceGraph.new(options[:b],fbg)
     fg.compare_with(fg2)
   end
 end
