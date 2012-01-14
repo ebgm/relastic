@@ -61,8 +61,18 @@ end
 desc 'draw finds the face in the input picture and draws the FaceGraph to output'
 arg_name 'relastic draw --input <image> --output <image>'
 command :draw do |c|
+  c.desc 'Path to input image'
+  c.flag [:i, :input]
+  c.desc 'Path to output image'
+  c.flag [:o, :output]
   c.action do |global_options,options,args|
-    raise "not implemented"
+    if(options[:i].nil? && options[:o].nil?)
+      raise "--input[-i] and --output[-o] required"
+    end
+    fbg = FaceBunchGraph.new()
+    fg = FaceGraph.new(options[:i],fbg)
+    fg.draw
+    fg.image_normalized.save(options[:o])
   end
 end
 
